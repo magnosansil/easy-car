@@ -56,12 +56,17 @@ async function Insert(
   pickup_longitude,
   dropoff_address
 ) {
+  let dt = new Date()
+    .toISOString("pt-BR", {
+      timezone: "America/Sao_Paulo",
+    })
+    .substring(0, 10);
   let sql = `insert into rides(passenger_user_id, pickup_address,
-    pickup_latitude, 
-    pickup_longitude, 
-    dropoff_address, 
+    pickup_latitude,
+    pickup_longitude,
+    dropoff_address,
     pickup_date, status)
-    values(?, ?, ?, ?, ?, CURRENT_DATE, 'P') 
+    values(?, ?, ?, ?, ?, ?, 'P')
     returning ride_id
   `;
 
@@ -71,6 +76,7 @@ async function Insert(
     pickup_latitude,
     pickup_longitude,
     dropoff_address,
+    dt,
   ]);
 
   return ride[0];
@@ -126,9 +132,7 @@ async function Accept(ride_id, driver_user_id) {
   let sql = `update rides 
     set status = 'A', 
     driver_user_id = ? 
-    where ride_id = ?`
-    ;
-
+    where ride_id = ?`;
   await execute(sql, [driver_user_id, ride_id]);
 
   return { ride_id };
