@@ -27,6 +27,18 @@ async function Insert(
   pickup_longitude,
   dropoff_address
 ) {
+  // Validation: user can only request one ride at a time
+  const dt = new Date()
+    .toISOString("pt-BR", {
+      timezone: "America/Sao_Paulo",
+    })
+    .substring(0, 10);
+  const searchRides = await List(passenger_user_id, dt, null, null, null, "F");
+
+  if (searchRides.length > 0) {
+    throw "You already have an unfinished ride for the current date.";
+  }
+
   const ride = await RideRepository.Insert(
     passenger_user_id,
     pickup_address,
@@ -57,6 +69,19 @@ async function ListForDriver(driver_user_id) {
 }
 
 async function Accept(ride_id, driver_user_id) {
+
+  // Validation: Driver can only accept one ride at a time
+  const dt = new Date()
+    .toISOString("pt-BR", {
+      timezone: "America/Sao_Paulo",
+    })
+    .substring(0, 10);
+  const searchRides = await List(null, dt, null, driver_user_id, "A", null);
+
+  if (searchRides.length > 0) {
+    throw `You already have an unfinished ride today for: ${searchRides[0].passenger_name}.`;
+  }
+
   const ride = await RideRepository.Accept(ride_id, driver_user_id);
 
   return ride;
