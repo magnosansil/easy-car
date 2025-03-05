@@ -5,14 +5,16 @@ async function List(
   pickup_date,
   ride_id,
   driver_user_id,
-  status
+  status,
+  status_not
 ) {
   const rides = await RideRepository.List(
     passenger_user_id,
     pickup_date,
     ride_id,
     driver_user_id,
-    status
+    status,
+    status_not
   );
 
   return rides;

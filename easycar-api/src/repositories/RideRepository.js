@@ -5,7 +5,8 @@ async function List(
   pickup_date,
   ride_id,
   driver_user_id,
-  status
+  status,
+  status_not
 ) {
   let filter = [];
 
@@ -43,6 +44,10 @@ async function List(
   if (status) {
     sql = sql + " and r.status = ? ";
     filter.push(status);
+  }
+  if (status_not) {
+    sql = sql + " and r.status <> ? ";
+    filter.push(status_not);
   }
 
   const rides = await execute(sql, filter);
